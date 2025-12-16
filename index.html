@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancún: Origen y Destino</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main id="scrolly">
+        
+        <figure id="sticky-global">
+            
+            <div id="cover-layer" class="global-layer">
+                <img src="assets/portada.png" alt="Vista aérea de Cancún" class="split-image">
+            </div>
+
+            <div id="video-layer-2" class="global-layer">
+                <video id="sand-video" class="hero-video" src="assets/linea-sobre-arena.mp4" muted playsinline preload="auto"></video>
+            </div>
+
+            <div id="map-layer" class="global-layer">
+                <div id="map"></div>
+                <div id="legend-step-21" class="map-legend">
+                    <h4>Cambio Poblacional (2010-2020)</h4>
+                    <div class="legend-scale">
+                        <div class="legend-item"><span style="background: #f7fcf5; border: 1px solid #ccc;"></span>≤ -75%</div>
+                        <div class="legend-item"><span style="background: #e5f5e0;"></span>-75% a -50%</div>
+                        <div class="legend-item"><span style="background: #c7e9c0;"></span>-50% a -25%</div>
+                        <div class="legend-item"><span style="background: #a1d99b;"></span>-25% a 0%</div>
+                        <div class="legend-item"><span style="background: #74c476;"></span>0% a 25%</div>
+                        <div class="legend-item"><span style="background: #41ab5d;"></span>25% a 50%</div>
+                        <div class="legend-item"><span style="background: #238b45;"></span>50% a 75%</div>
+                        <div class="legend-item"><span style="background: #006d2c;"></span>75% a 100%</div>
+                        <div class="legend-item"><span style="background: #00441b;"></span>≥ 100%</div>
+                    </div>
+                </div>
+            </div>
+
+        </figure>
+
+        <article class="scrolly-content">
+            
+            <!-- STEP 1 PORTADA -->
+            <div class="step title-step" data-step="1">
+                <div class="step-content right-content">
+                    <h1>Cancún: la ciudad que creció más rápido que nosotros</h1>
+                </div>
+            </div>
+
+            <!-- STEP 2 INTRODUCCIÓN -->>
+            <div class="step text-step" data-step="2">
+                <div class="two-col-grid">
+                    <div class="step-content left-col justified-text">
+                        <p><em>Me llamo Ana. Llegué a Cancún de niña, cuando todavía mucha gente hablaba de “los pioneros”. He vivido en supermanzanas céntricas, en fraccionamientos nuevos en la periferia.</em></p>
+                        <p><em>Cuando mis papás llegaron a Cancún, les contaban que esto había sido un proyecto dibujado desde la Ciudad de México. Un plan maestro. Una zona hotelera separada de la ciudad donde iba a vivir la gente.</em></p>
+                    </div>
+
+                    <div class="step-content right-col">
+                        <aside class="info-card">
+                            <h3>Lo que estás por ver</h3>
+                            <div class="info-divider"></div>
+                            <p>Esta historia cuenta cómo ha crecido Cancún, usando mapas y datos, pero desde la mirada de alguien que la ha vivido.</p>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+            
+            </article>
+    </main>
+
+    <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script src="https://unpkg.com/scrollama"></script>
+    <script src="main.js"></script>
+</body>
+</html>
