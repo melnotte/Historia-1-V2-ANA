@@ -88,13 +88,16 @@ map.on('load', () => {
 const layers = {
     cover: document.getElementById('cover-layer'),
     map: document.getElementById('map-layer'),
-    video2: document.getElementById('video-layer-2')
+    video2: document.getElementById('video-layer-2'),
+    chart: document.getElementById('chart-layer')
 };
 
 // 3. Lógica de Capas Globales
 function switchGlobalLayer(name) {
     // Apaga todas las capas
-    Object.values(layers).forEach(el => el.classList.remove('is-active'));
+    Object.values(layers).forEach(el => {
+        if (el) el.classList.remove('is-active');
+    });
     // Enciende solo la solicitada
     if (layers[name]) layers[name].classList.add('is-active');
 }
@@ -130,6 +133,71 @@ function setupAnimations() {
             }
         );
     });
+
+    // Animación para Step 3 (Secuencia Chart)
+    // 1. Ocultar el chart inicialmente
+    gsap.set('.chart-container', { opacity: 0, y: 50 });
+
+    // 2. Secuencia Timeline para Step 3
+    const step3 = document.querySelector('.step[data-step="3"]');
+    
+    // a) Texto inicial (párrafo)
+    gsap.fromTo('.step[data-step="3"] .initial-text',
+        { y: 50, opacity: 0 },
+        {
+            y: 0, opacity: 1, duration: 0.8,
+            scrollTrigger: {
+                trigger: '.step[data-step="3"] .initial-text',
+                start: "top 80%",
+                toggleActions: "play reverse play reverse"
+            }
+        }
+    );
+
+    // b) Gráfica aparece al scrollear el spacer (antes de la explicación)
+    // Usamos el spacer como trigger o el inicio de la explicación
+    ScrollTrigger.create({
+        trigger: '.step[data-step="3"] .chart-explanation',
+        start: "top bottom", // Cuando el top de la explicación entra por abajo (fin del spacer)
+        onEnter: () => {
+            gsap.to('.chart-container', { opacity: 1, y: 0, duration: 0.8 });
+            animateChartEntry();
+        },
+        onLeaveBack: () => {
+             gsap.to('.chart-container', { opacity: 0, y: 50, duration: 0.5 });
+        }
+    });
+
+    // c) Texto explicativo
+    gsap.fromTo('.step[data-step="3"] .chart-explanation',
+        { y: 50, opacity: 0 },
+        {
+            y: 0, opacity: 1, duration: 0.8,
+            scrollTrigger: {
+                trigger: '.step[data-step="3"] .chart-explanation',
+                start: "top 80%",
+                toggleActions: "play reverse play reverse"
+            }
+        }
+    );
+
+    // d) Texto impacto y desvanecimiento final
+    ScrollTrigger.create({
+        trigger: '.step[data-step="3"] .chart-impact',
+        start: 'top 60%',
+        onEnter: () => {
+            gsap.to('.step[data-step="3"] .chart-impact', { opacity: 1, y: 0, duration: 0.8 });
+        },
+        onLeave: () => {
+            // Al salir del impacto hacia abajo, desvanecer todo
+            gsap.to('.chart-container', { opacity: 0, y: -50, duration: 1 });
+            gsap.to('.step[data-step="3"] .step-content', { opacity: 0, y: -50, duration: 1 });
+        },
+        onEnterBack: () => {
+            gsap.to('.chart-container', { opacity: 1, y: 0, duration: 1 });
+            gsap.to('.step[data-step="3"] .step-content', { opacity: 1, y: 0, duration: 1 });
+        }
+    });
 }
 
 // 5. Scrollama Setup
@@ -154,7 +222,7 @@ function handleStepEnter(response) {
             break;
             
         case '3':
-            switchGlobalLayer('map');
+            switchGlobalLayer('chart');
             break;
 
         default:
@@ -170,7 +238,7 @@ function handleStepProgress(response) {
 function init() {
     // 1. Inicializar animaciones internas
     setupAnimations();
-
+    initPopulationChart();
     // 2. Inicializar Scrollama
     scroller
         .setup({
@@ -183,6 +251,215 @@ function init() {
         .onStepProgress(handleStepProgress);
         
     window.addEventListener('resize', scroller.resize);
+}
+
+// 6. POPULATION CHART LOGIC
+let populationData = [];
+
+function initPopulationChart() {
+    const container = document.querySelector('#populationGrowthChart');
+    if (!container) return;
+
+    d3.csv("poblacion-valores.csv")
+        .then(function(csvData) {
+            populationData = csvData.map(d => {
+                return {
+                    year: +d.Año,
+                    benitoJuarez: parseNumber(d['Población Benito Juárez']),
+                    mexico: parseNumber(d['Poblacion México']),
+                    mundo: parseNumber(d['Poblacion Mundo']),
+                    qrooTotal: parseNumber(d['Población Todo de Quintana Roo'])
+                };
+            }).filter(d => d.year && !isNaN(d.year) && d.year <= 2020);
+
+            createDataSelector();
+            createChart('benito');
+        })
+        .catch(err => console.error("Error cargando datos:", err));
+}
+
+const palette = {
+    benito: { start: '#FFB703', end: '#FB8500' },
+    mexico: { start: '#8ECAE6', end: '#219EBC' },
+    mundo: { start: '#A2D2FF', end: '#023047' },
+    qroo: { start: '#48CAE4', end: '#0077B6' }
+};
+
+function getColorByType(type, pos) {
+    return palette[type] ? palette[type][pos] : palette['benito'][pos];
+}
+
+function parseNumber(str) {
+    if (!str || str.trim() === '') return null;
+    return +str.replace(/\./g, '');
+}
+
+function createDataSelector() {
+    const container = document.querySelector('#populationGrowthChart');
+    if (!container) return;
+    
+    // Evitar duplicados si se llama varias veces
+    if (container.querySelector('.data-selector')) return;
+
+    const selectorDiv = document.createElement('div');
+    selectorDiv.className = 'data-selector';
+    selectorDiv.style.marginBottom = '15px';
+    selectorDiv.style.textAlign = 'center';
+
+    const options = [
+        { value: 'benito', label: 'Cancún' },
+        { value: 'qroo', label: 'Quintana Roo' },
+        { value: 'mexico', label: 'México' },
+        { value: 'mundo', label: 'Mundo' }
+    ];
+
+    options.forEach(opt => {
+        const label = document.createElement('label');
+        label.style.color = opt.value === 'benito' ? '#FB8500' : '#023047';
+        label.style.fontWeight = opt.value === 'benito' ? '700' : '600';
+        
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'dataType';
+        radio.value = opt.value;
+        radio.checked = opt.value === 'benito';
+        
+        radio.addEventListener('change', (e) => {
+            selectorDiv.querySelectorAll('label').forEach(l => {
+                const r = l.querySelector('input');
+                l.style.color = r.checked ? '#FB8500' : '#023047';
+                l.style.fontWeight = r.checked ? '700' : '600';
+            });
+            createChart(e.target.value);
+        });
+
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(opt.label));
+        selectorDiv.appendChild(label);
+    });
+
+    container.prepend(selectorDiv);
+}
+
+function createChart(dataType) {
+    const container = document.querySelector('#populationGrowthChart');
+    if (!container) return;
+
+    // Limpiar SVG previo
+    const existingSvg = container.querySelector('svg');
+    if (existingSvg) existingSvg.remove();
+
+    // Configuración D3
+    const baseWidth = 800;
+    const baseHeight = 400;
+    const margin = { top: 40, right: 60, bottom: 60, left: 80 };
+    const width = baseWidth - margin.left - margin.right;
+    const height = baseHeight - margin.top - margin.bottom;
+
+    const svg = d3.select('#populationGrowthChart')
+        .append('svg')
+        .attr('viewBox', `0 0 ${baseWidth} ${baseHeight}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet')
+        .style('width', '100%')
+        .style('height', '100%')
+        .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    // Gradiente
+    const gradientId = `bar-gradient-${dataType}`;
+    const defs = svg.append('defs');
+    const gradient = defs.append('linearGradient')
+        .attr('id', gradientId)
+        .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%');
+    
+    gradient.append('stop').attr('offset', '0%').attr('stop-color', getColorByType(dataType, 'start'));
+    gradient.append('stop').attr('offset', '100%').attr('stop-color', getColorByType(dataType, 'end'));
+
+    // Filtrar datos
+    const data = populationData.filter(d => {
+        if (dataType === 'benito') return d.benitoJuarez !== null;
+        if (dataType === 'mexico') return d.mexico !== null;
+        if (dataType === 'mundo') return d.mundo !== null;
+        if (dataType === 'qroo') return d.qrooTotal !== null;
+        return false;
+    });
+
+    const getValue = (d) => {
+        if (dataType === 'benito') return d.benitoJuarez;
+        if (dataType === 'mexico') return d.mexico;
+        if (dataType === 'mundo') return d.mundo;
+        return d.qrooTotal;
+    };
+
+    // Escalas
+    const x = d3.scaleBand()
+        .domain(data.map(d => d.year))
+        .range([0, width])
+        .padding(0.3);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(data, getValue) * 1.1])
+        .nice()
+        .range([height, 0]);
+
+    // Ejes
+    svg.append('g')
+        .attr('class', 'axis x-axis')
+        .attr('transform', `translate(0,${height})`)
+        .call(d3.axisBottom(x).tickFormat(d => d.toString()));
+
+    svg.append('g')
+        .attr('class', 'axis y-axis')
+        .call(d3.axisLeft(y).ticks(5).tickFormat(d => {
+            if (d >= 1000000) return (d/1000000).toFixed(1) + 'M';
+            if (d >= 1000) return (d/1000).toFixed(0) + 'K';
+            return d;
+        }));
+
+    // Barras
+    svg.selectAll('.bar')
+        .data(data)
+        .enter()
+        .append('rect')
+        .attr('class', 'bar')
+        .attr('x', d => x(d.year))
+        .attr('width', x.bandwidth())
+        .attr('y', height) // Animación desde abajo
+        .attr('height', 0)
+        .style('fill', `url(#${gradientId})`)
+        .on('mouseover', function(event, d) {
+            d3.select(this).style('opacity', 0.8);
+            const tooltip = d3.select('.chart-container .tooltip');
+            const val = getValue(d).toLocaleString();
+            tooltip.style('opacity', 1)
+                   .html(`<div>Año: ${d.year}</div><div class="value">${val}</div>`)
+                   .style('left', (event.pageX - container.getBoundingClientRect().left + 20) + 'px')
+                   .style('top', (event.pageY - container.getBoundingClientRect().top - 40) + 'px');
+        })
+        .on('mouseout', function() {
+            d3.select(this).style('opacity', 1);
+            d3.select('.chart-container .tooltip').style('opacity', 0);
+        })
+        .transition().duration(800)
+        .attr('y', d => y(getValue(d)))
+        .attr('height', d => height - y(getValue(d)));
+
+    // Etiquetas sobre las barras
+    svg.selectAll('.label')
+        .data(data)
+        .enter()
+        .append('text')
+        .attr('class', 'value-label')
+        .attr('x', d => x(d.year) + x.bandwidth() / 2)
+        .attr('y', d => y(getValue(d)) - 5)
+        .text(d => {
+            const val = getValue(d);
+            if (val > 1000000) return (val/1000000).toFixed(1) + 'M';
+            if (dataType === 'benito') return (val/1000).toFixed(0) + 'K';
+            return val;
+        })
+        .attr('opacity', 0)
+        .transition().delay(500).duration(500).attr('opacity', 1);
 }
 
 // Arrancar

@@ -215,3 +215,114 @@ p { line-height: 1.6; font-size: 1.1rem; }
         border-radius: 0 0 8px 8px;
     }
 }
+
+/* --- STEP 3: GRAFICA DE POBLACION --- */
+#chart-layer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-cream); /* Fondo suave */
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 900px;
+    height: 550px;
+    margin: 30px auto;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    position: relative;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    font-family: sans-serif;
+}
+
+#populationGrowthChart {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Estilos de ejes y textos del gráfico */
+.chart-container .axis path,
+.chart-container .axis line {
+    stroke: rgba(120, 120, 120, 0.2);
+    shape-rendering: crispEdges;
+}
+
+.chart-container .axis text {
+    fill: #000000;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.chart-container .bar {
+    fill: url(#bar-gradient);
+    stroke: rgba(255, 255, 255, 0.5);
+    stroke-width: 1px;
+    /* transition removed to avoid conflict with GSAP */
+}
+
+.chart-container .bar:hover {
+    filter: brightness(1.05);
+    cursor: pointer;
+}
+
+.chart-container .value-label {
+    font-size: 14px;
+    font-weight: bold;
+    fill: #000000;
+    text-anchor: middle;
+}
+
+.chart-container .title {
+    font-size: 18px;
+    font-weight: bold;
+    fill: #000000;
+    text-anchor: middle;
+}
+
+/* Tooltip */
+.chart-container .tooltip {
+    position: absolute;
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 100;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+    border-left: 4px solid #FB8500;
+    min-width: 180px;
+}
+
+.chart-container .tooltip p { margin: 5px 0; }
+.chart-container .tooltip .value { color: #FB8500; font-weight: 700; font-size: 16px; }
+
+/* Selector de datos (botones de radio) */
+.data-selector label {
+    margin-right: 15px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.data-selector input[type="radio"] { margin-right: 5px; }
+
+/* Estilos para el contenido del paso 3 */
+.centered-content {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.spacer-100vh {
+    height: 100vh;
+}

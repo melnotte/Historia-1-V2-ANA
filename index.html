@@ -25,6 +25,13 @@
                 <video id="sand-video" class="hero-video" src="assets/linea-sobre-arena.mp4" muted playsinline preload="auto"></video>
             </div>
 
+            <div id="chart-layer" class="global-layer">
+                <div class="chart-container">
+                    <div id="populationGrowthChart"></div>
+                    <div class="tooltip"></div>
+                </div>
+            </div>
+
             <div id="map-layer" class="global-layer">
                 <div id="map"></div>
                 <div id="legend-step-21" class="map-legend">
@@ -71,12 +78,36 @@
                     </div>
                 </div>
             </div>
+
+            <!-- STEP 3 ORIGEN Y CRECIMIENTO -->
+            <div class="step chart-step" data-step="3">
+                <div class="step-content centered-content initial-text">
+                    <h2>Origen y crecimiento</h2>
+                    <p>El experimento salió bien. En pocas décadas la ciudad explotó en población.</p>
+                    <p>Yo crecí escuchando que “Cancún creció rapidísimo”, pero aquí no es solo un chisme familiar. Los datos lo muestran.</p>
+                </div>
+                
+                <div class="spacer-100vh"></div>
+
+                <div class="step-content centered-content chart-explanation">
+                    <p>En esta gráfica se ve cómo pasamos de ser un campamento en la selva a una ciudad de más de un millón de habitantes.</p>
+                    <p>No es solo una línea que sube. Son familias llegando, barrios nuevos y una ciudad que casi no tuvo tiempo de planearse mientras crecía.</p>
+                </div>
+
+                <div class="spacer-100vh"></div>
+
+                <div class="step-content centered-content chart-impact">
+                    <h3>Por qué importa</h3>
+                    <p>Crecer rápido sin pausa hace más difícil que los servicios, el transporte y los parques alcancen a todas las personas.</p>
+                </div>
+            </div>
             
             </article>
     </main>
 
     <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
     <script src="https://unpkg.com/scrollama"></script>
     <script src="main.js"></script>
