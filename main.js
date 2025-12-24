@@ -135,69 +135,50 @@ function setupAnimations() {
     });
 
     // Animación para Step 3 (Secuencia Chart)
-    // 1. Ocultar el chart inicialmente
-    gsap.set('.chart-container', { opacity: 0, y: 50 });
+    const isDesktop = window.innerWidth > 900;
+    const targetX = isDesktop ? -40 : 0;
 
-    // 2. Secuencia Timeline para Step 3
-    const step3 = document.querySelector('.step[data-step="3"]');
-    
-    // a) Texto inicial (párrafo)
-    gsap.fromTo('.step[data-step="3"] .initial-text',
-        { y: 50, opacity: 0 },
-        {
-            y: 0, opacity: 1, duration: 0.8,
-            scrollTrigger: {
-                trigger: '.step[data-step="3"] .initial-text',
-                start: "top 80%",
-                toggleActions: "play reverse play reverse"
-            }
-        }
-    );
+    // Setup inicial para todos los elementos de texto
+    gsap.set(['.exp-1', '.exp-2', '.chart-impact'], { 
+        opacity: 0, 
+        x: isDesktop ? -180 : -80 
+    });
 
-    // b) Gráfica aparece al scrollear el spacer (antes de la explicación)
-    // Usamos el spacer como trigger o el inicio de la explicación
-    ScrollTrigger.create({
-        trigger: '.step[data-step="3"] .chart-explanation',
-        start: "top bottom", // Cuando el top de la explicación entra por abajo (fin del spacer)
-        onEnter: () => {
-            gsap.to('.chart-container', { opacity: 1, y: 0, duration: 0.8 });
-            animateChartEntry();
-        },
-        onLeaveBack: () => {
-             gsap.to('.chart-container', { opacity: 0, y: 50, duration: 0.5 });
+    const tl3 = gsap.timeline({
+        scrollTrigger: {
+            trigger: ".step[data-step='3']",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1
         }
     });
 
-    // c) Texto explicativo
-    gsap.fromTo('.step[data-step="3"] .chart-explanation',
-        { y: 50, opacity: 0 },
-        {
-            y: 0, opacity: 1, duration: 0.8,
-            scrollTrigger: {
-                trigger: '.step[data-step="3"] .chart-explanation',
-                start: "top 80%",
-                toggleActions: "play reverse play reverse"
-            }
-        }
-    );
+    tl3
+        // 1. Gráfico aparece
+        .to('.chart-container', { opacity: 1, y: 0, duration: 1 })
+        
+        // 2. ENTRADA EXPLICACIÓN 1
+        .to('.exp-1', { opacity: 1, x: targetX, duration: 2.5, ease: "power2.out" });
 
-    // d) Texto impacto y desvanecimiento final
-    ScrollTrigger.create({
-        trigger: '.step[data-step="3"] .chart-impact',
-        start: 'top 60%',
-        onEnter: () => {
-            gsap.to('.step[data-step="3"] .chart-impact', { opacity: 1, y: 0, duration: 0.8 });
-        },
-        onLeave: () => {
-            // Al salir del impacto hacia abajo, desvanecer todo
-            gsap.to('.chart-container', { opacity: 0, y: -50, duration: 1 });
-            gsap.to('.step[data-step="3"] .step-content', { opacity: 0, y: -50, duration: 1 });
-        },
-        onEnterBack: () => {
-            gsap.to('.chart-container', { opacity: 1, y: 0, duration: 1 });
-            gsap.to('.step[data-step="3"] .step-content', { opacity: 1, y: 0, duration: 1 });
+        // Paneo de gráfica (solo escritorio) sincronizado con la primera entrada
+        if (isDesktop) {
+            tl3.to('.chart-container', { x: "22%", duration: 2.5, ease: "power2.inOut" }, "-=2.5");
         }
-    });
+
+    tl3
+        // 3. RELEVO: SALE EXPLICACIÓN 1 -> ENTRA EXPLICACIÓN 2
+        .to('.exp-1', { opacity: 0, x: 100, duration: 1.5, delay: 2 })
+        .to('.exp-2', { opacity: 1, x: targetX, duration: 2.5, ease: "power2.out" })
+
+        // 4. RELEVO: SALE EXPLICACIÓN 2 -> ENTRA IMPACTO
+        .to('.exp-2', { opacity: 0, x: 100, duration: 1.5, delay: 2 })
+        .fromTo('.chart-impact', 
+            { opacity: 0, x: isDesktop ? -180 : -80 },
+            { opacity: 1, x: targetX, duration: 2.5, ease: "power2.out" }
+        )
+        
+        // 5. Salida Final
+        .to(['.chart-impact', '.chart-container'], { opacity: 0, duration: 1, delay: 2 });
 }
 
 // 5. Scrollama Setup
@@ -217,7 +198,6 @@ function handleStepEnter(response) {
             break;
             
         case '2':
-            // Mantenemos la portada de fondo mientras leemos la intro
             switchGlobalLayer('cover'); 
             break;
             

@@ -1,14 +1,16 @@
 :root {
     /* Paleta de Color Global */
-    --color-teal:       #84BFAE;
-    --color-dark-green: #425931;
-    --color-olive:      #97A663;
-    --color-cream:      #F2EDE4;
-    --color-terracotta: #BF8069;
+    --color-teal:        #84BFAE;
+    --color-dark-green:  #425931;
+    --color-olive:       #97A663;
+    --color-cream:       #F2EDE4;
+    --color-terracotta:  #BF8069;
+    --color-orange:      #d97f5a;
+    --color-light-orange:#eed7c5;
     
-    /* Variables de uso */
+    /* Variables de uso */  
     --bg-body:          #f4f4f4; /* Fondo general */
-    --text-primary:     var(--color-dark-green);
+    --text-primary:     #333;
 }
 
 *, *::before, *::after {
@@ -57,7 +59,6 @@ p { line-height: 1.6; font-size: 1.1rem; }
     pointer-events: auto;
 }
 
-.hero-video { width: 100%; height: 100%; object-fit: cover; }
 #map { width: 100%; height: 100%; }
 
 /* Leyenda del Mapa */
@@ -97,6 +98,8 @@ p { line-height: 1.6; font-size: 1.1rem; }
     margin: 0 auto;
     pointer-events: none; 
     overflow: visible;
+    padding: 2rem;
+    z-index: 10;
 }
 
 .step-content {
@@ -117,7 +120,9 @@ p { line-height: 1.6; font-size: 1.1rem; }
 #cover-layer {
     background-color: var(--color-dark-green);
     display: flex;
+    flex-direction: row;
     justify-content: flex-start;
+    align-items: stretch;
 }
 
 .split-image {
@@ -137,25 +142,61 @@ p { line-height: 1.6; font-size: 1.1rem; }
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
-
-.right-content {
-    text-align: center;
     color: var(--color-cream);
-    padding: 2rem; 
-    max-width: 500px;
+    text-align: center;
+    padding: 0 10%;
+    overflow: hidden;
 }
 
-.right-content h1 {
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
-    line-height: 1.1;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+.title-step h1 {
+    font-size: clamp(2.5rem, 7vw, 3.8rem);
+    margin: 0;
+    width: 100%;
+}
+
+/* --- MEDIA QUERY PARA TABLET Y MÓVIL --- */
+@media (max-width: 900px) {
+    #sticky-global {
+        overflow: visible; 
+    }
+    #cover-layer.global-layer {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+    .split-image {
+        width: 100%;
+        height: 50vh;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+    .title-step {
+        width: 100%;
+        margin-left: 0;
+        padding: 2rem;
+        height: auto;
+        min-height: 50vh;
+        margin-top: 50vh;
+        background-color: var(--color-dark-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 10;
+    }
+    .title-step h1 {
+        font-size: 2.5rem;
+    }
+    .scrolly-content {
+        margin-top: -100vh;
+    }
 }
 
 /* --- STEP 2: INTRODUCCIÓN --- */
 .text-step {
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.98); /* Fondo que cubre el 100% */
+    background-color: var(--color-cream);
     box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
 }
 
@@ -163,54 +204,51 @@ p { line-height: 1.6; font-size: 1.1rem; }
     display: grid;
     grid-template-columns: 1fr 1fr; /* 50% y 50% exactos */
     width: 100%;
-    max-width: 1400px; /* Opcional: para que el texto no se estire infinito en monitores ultra-wide */
+    max-width: 1400px;
     margin: 0 auto;
     box-sizing: border-box;
 }
 
 .step-content.left-col, 
 .step-content.right-col {
-    padding: 4rem 3rem; /* Padding interno para que el contenido no toque los bordes */
+    padding: 4rem 3rem;
     opacity: 0.2;
     transition: opacity 0.6s ease;
 }
 
-/* El step activo ilumina ambas columnas */
 .step.is-active .step-content {
     opacity: 1;
 }
 
-/* Ajustes específicos para el recuadro */
 .info-card {
-    background-color: var(--color-cream);
+    background-color: var(--color-light-orange);
     border-left: 6px solid var(--color-terracotta);
     padding: 2.5rem;
     border-radius: 8px;
+    text-align: justify;
 }
 
-/* RESPONSIVE: Apilado vertical en móviles */
+/* MEDIA QUERY PARA TABLET Y MÓVIL */
 @media (max-width: 900px) {
     .two-col-grid {
-        grid-template-columns: 1fr; /* Cambia a una sola columna */
+        grid-template-columns: 1fr;
     }
-    
     .step-content.left-col, 
     .step-content.right-col {
-        padding: 2rem 1.5rem; /* Menos padding en móvil */
+        padding: 2rem 1.5rem;
     }
-
     .info-card {
         border-left: none;
         border-top: 6px solid var(--color-terracotta);
     }
 }
 
-/* --- STEP 3: GRAFICA DE POBLACION --- */
+/* --- STEP 3: GRÁFICA DE POBLACIÓN --- */
 #chart-layer {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--color-cream); /* Fondo suave */
+    background-color: var(--color-cream);
 }
 
 .chart-container {
@@ -250,7 +288,6 @@ p { line-height: 1.6; font-size: 1.1rem; }
     fill: url(#bar-gradient);
     stroke: rgba(255, 255, 255, 0.5);
     stroke-width: 1px;
-    /* transition removed to avoid conflict with GSAP */
 }
 
 .chart-container .bar:hover {
@@ -301,17 +338,116 @@ p { line-height: 1.6; font-size: 1.1rem; }
 }
 .data-selector input[type="radio"] { margin-right: 5px; }
 
-/* Estilos para el contenido del paso 3 */
-.centered-content {
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 2rem;
+/* Estilos para el contenido del STEP 3 */
+.step.chart-step {
+    height: 450vh;
+    display: block;
+    padding: 0;
+}
+
+.scrolly-container-step3 {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    z-index: 20;
+    overflow: hidden;
+}
+
+.side-card-content {
+    position: absolute;
+    left: 5%;
+    max-width: 380px;
+    opacity: 0;
+    pointer-events: auto;
+    will-change: transform, opacity;
+}
+
+.side-card-content p {
+    font-style: normal;
+    color: var(--text-primary);
+}
+
+.chart-explanation p {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 1.5rem;
     border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    max-width: 600px;
-    margin: 0 auto;
+    font-size: 1.15rem;
+    color: var(--text-primary);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.full-width-intro {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    background-color: var(--color-dark-green);
+    color: var(--color-cream);
+    padding: 6rem 0;
     text-align: center;
 }
 
-.spacer-100vh {
-    height: 100vh;
+.intro-text-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 3rem;
+}
+
+.full-width-intro h2 {
+    color: var(--color-cream);
+    margin-bottom: 1.5rem;
+}
+
+.full-width-intro p em {
+    font-family: 'Merriweather', serif;
+    opacity: 0.9;
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+/* MEDIA QUERY PARA MÓVILES Y TABLETAS */
+@media (max-width: 900px) {
+    .scrolly-container-step3 {
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 8vh;
+    }
+    .side-card-content {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 600px;
+        bottom: 8vh;
+    }
+    .chart-explanation p {
+        font-size: 1.1rem;
+        padding: 1.2rem;
+    }
+    .chart-container {
+        transform: scale(0.85) translateY(-15vh); 
+        transform-origin: top center;
+    }
+    .scrolly-container-step3 .side-card-content {
+        width: 92%;
+        max-width: 500px;
+    }
+    .side-card-content .info-card {
+        padding: 1.2rem 1.5rem;
+        border-left-width: 4px;
+    }
+    .side-card-content .info-card h3 {
+        font-size: 1.2rem;
+        margin-top: 0;
+    }
+    .side-card-content .info-card p {
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+    .side-card-content .info-divider {
+        margin: 0.8rem 0;
+        width: 40px;
+    }
 }
