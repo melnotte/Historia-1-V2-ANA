@@ -11,6 +11,10 @@
     --text-primary:     var(--color-dark-green);
 }
 
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 /* --- RESET BÁSICO --- */
 body, html {
     margin: 0;
@@ -19,6 +23,7 @@ body, html {
     color: #333;
     background-color: var(--bg-body);
     width: 100%;
+    overflow-x: clip;
 }
 
 h1, h2 { font-family: 'Merriweather', serif; }
@@ -148,71 +153,55 @@ p { line-height: 1.6; font-size: 1.1rem; }
 }
 
 /* --- STEP 2: INTRODUCCIÓN --- */
+.text-step {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.98); /* Fondo que cubre el 100% */
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+}
+
 .two-col-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
+    grid-template-columns: 1fr 1fr; /* 50% y 50% exactos */
     width: 100%;
-    max-width: 100%;
-    margin: 0;
+    max-width: 1400px; /* Opcional: para que el texto no se estire infinito en monitores ultra-wide */
+    margin: 0 auto;
     box-sizing: border-box;
-    background-color: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
-    padding: 4rem max(2rem, calc((100% - 1200px) / 2));
 }
 
-/* Ajustes para la columna izquierda (Texto) */
-.step-content.left-col {
-    background: transparent;
-    padding: 0;
-    max-width: 100%;
+.step-content.left-col, 
+.step-content.right-col {
+    padding: 4rem 3rem; /* Padding interno para que el contenido no toque los bordes */
+    opacity: 0.2;
+    transition: opacity 0.6s ease;
 }
 
-/* Diseño del Recuadro Informativo (Derecha) */
+/* El step activo ilumina ambas columnas */
+.step.is-active .step-content {
+    opacity: 1;
+}
+
+/* Ajustes específicos para el recuadro */
 .info-card {
     background-color: var(--color-cream);
     border-left: 6px solid var(--color-terracotta);
     padding: 2.5rem;
     border-radius: 8px;
-    box-shadow: none;
-    position: relative;
 }
 
-.info-card h3 {
-    color: var(--color-dark-green);
-    margin-top: 0;
-    font-size: 1.5rem;
-    font-family: 'Space Grotesk', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.info-divider {
-    height: 2px;
-    width: 50px;
-    background-color: var(--color-olive);
-    margin: 1rem 0;
-}
-
-.info-card p {
-    font-size: 1rem;
-    color: #555;
-    margin-bottom: 0;
-}
-
-/* RESPONSIVE: Móviles y Tablets */
+/* RESPONSIVE: Apilado vertical en móviles */
 @media (max-width: 900px) {
     .two-col-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-        padding: 4rem 1.5rem; 
+        grid-template-columns: 1fr; /* Cambia a una sola columna */
+    }
+    
+    .step-content.left-col, 
+    .step-content.right-col {
+        padding: 2rem 1.5rem; /* Menos padding en móvil */
     }
 
     .info-card {
         border-left: none;
         border-top: 6px solid var(--color-terracotta);
-        border-radius: 0 0 8px 8px;
     }
 }
 

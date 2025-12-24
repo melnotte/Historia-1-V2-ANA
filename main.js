@@ -260,7 +260,7 @@ function initPopulationChart() {
     const container = document.querySelector('#populationGrowthChart');
     if (!container) return;
 
-    d3.csv("poblacion-valores.csv")
+    d3.csv("data/poblacion-valores.csv")
         .then(function(csvData) {
             populationData = csvData.map(d => {
                 return {
