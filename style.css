@@ -43,6 +43,7 @@ p { line-height: 1.6; font-size: 1.1rem; }
     margin: 0;
     z-index: 0; /* Al fondo */
     overflow: hidden;
+    transition: z-index 0.3s step-end;
 }
 
 .global-layer {
@@ -75,14 +76,47 @@ p { line-height: 1.6; font-size: 1.1rem; }
     z-index: 5;
     opacity: 0;
     transition: opacity 0.5s;
+    pointer-events: none;
 }
 .legend-item { display: flex; align-items: center; margin-bottom: 4px; }
 .legend-item span { width: 15px; height: 15px; margin-right: 8px; display: inline-block; }
 
 /* Tooltip Mapbox */
-.popup-header { font-weight: 700; border-bottom: 1px solid #eee; margin-bottom: 5px; padding-bottom: 5px; }
-.popup-data { font-size: 1.4rem; font-weight: 800; }
-.popup-label { font-size: 0.8rem; color: #666; text-transform: uppercase; }
+.mapboxgl-popup-content {
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    font-family: 'Inter', sans-serif;
+    background: #ffffff;
+    border: 1px solid #eee;
+    z-index: 3000 !important;
+}
+
+.popup-header { 
+    font-weight: 700; 
+    border-bottom: 1px solid #eee; 
+    margin-bottom: 8px; 
+    padding-bottom: 5px;
+    color: var(--color-dark-green2);
+}
+.popup-data { 
+    font-size: 1.6rem; 
+    font-weight: 800; 
+    line-height: 1;
+}
+.popup-label { 
+    font-size: 0.75rem; 
+    color: #666; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+/* Estilo para las flechas del popup */
+.mapboxgl-popup-tip {
+    border-top-color: #ffffff !important;
+    border-bottom-color: #ffffff !important;
+}
+
 
 /* --- CONTENEDOR DE SCROLL --- */
 .scrolly-content {
@@ -91,16 +125,17 @@ p { line-height: 1.6; font-size: 1.1rem; }
     margin-top: -100vh;
     margin-top: -100dvh;
     padding-bottom: 20vh;
+    pointer-events: none;
 }
 
 /* Configuración General de Steps */
 .step {
     position: relative;
     margin: 0 auto;
-    pointer-events: none; 
     overflow: visible;
     padding: 2rem;
     z-index: 10;
+    pointer-events: none !important;
 }
 
 .step-content {
@@ -535,10 +570,10 @@ p { line-height: 1.6; font-size: 1.1rem; }
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    pointer-events: none;
     opacity: 0;
     visibility: hidden;
     transition: none !important; 
+    pointer-events: auto;
 }
 
 /* 2000 y 2010: Arriba */
@@ -583,10 +618,50 @@ p { line-height: 1.6; font-size: 1.1rem; }
         border-bottom: 6px solid var(--color-orange);
         z-index: 9999;
         visibility: hidden;
+        pointer-events: auto;
     }
     #year-marker {
         font-size: 3.5rem;
         background: transparent;
         padding: 0.5rem 1rem;
+    }
+}
+
+/*-- ESTILOS DEL STEP 5: ABANDONO DEL CENTRO --*/
+.step.pinned-step {
+    min-height: 400vh !important;
+    position: relative;
+    pointer-events: none;
+}
+
+.top-right-sticky {
+    position: absolute;
+    top: 15vh;
+    right: 5vw;
+    width: 380px;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    background: rgba(255, 255, 255, 0.98);
+    padding: 2rem;
+    border-right: 6px solid #00441b;
+    box-shadow: -10px 10px 30px rgba(0,0,0,0.2);
+    pointer-events: auto;
+}
+
+/* MEDIA QUERY MÓVIL */
+@media (max-width: 768px) {
+    .top-right-sticky {
+        position: absolute !important;
+        width: 90% !important;
+        left: 5% !important;
+        right: 5% !important;
+        top: 55vh !important;
+        bottom: auto !important;
+        height: auto !important;
+        overflow-y: auto !important;
+        padding: 1.2rem !important;
+        border-right: none !important;
+        border-bottom: 6px solid #00441b !important;
     }
 }

@@ -56,26 +56,34 @@ map.on('load', () => {
     const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 20 });
 
     map.on('mousemove', 'layer-cambio-poblacional', (e) => {
+        // Verificamos opacidad para no disparar tooltip si la capa está oculta
         const opacity = map.getPaintProperty('layer-cambio-poblacional', 'fill-opacity');
-        if (opacity < 0.1 || !e.features.length) return;
+        if (opacity < 0.1) return;
 
-        map.getCanvas().style.cursor = 'pointer';
-        const props = e.features[0].properties;
-        const pob2020 = Number(props.POBTOT || props.Pob2020 || 0);
-        const pob2010 = Number(props.Pob2010 || 0);
-        const difPct = Number(props.p100_dife_pob || ((pob2010 !== 0) ? ((pob2020 - pob2010) / pob2010) * 100 : 0));
-        const colorPct = difPct >= 0 ? '#238b45' : '#C1121F';
+        if (e.features.length > 0) {
+            map.getCanvas().style.cursor = 'pointer';
+            
+            const props = e.features[0].properties;
+            
+            const pob2020 = Number(props.POBTOT || props.Pob2020 || 0);
+            const pob2010 = Number(props.Pob2010 || 0);
+            const difPct = Number(props.p100_dife_pob || ((pob2010 > 0) ? ((pob2020 - pob2010) / pob2010) * 100 : 0));
+            
+            const colorPct = difPct >= 0 ? '#238b45' : '#C1121F';
+            const signo = difPct > 0 ? '+' : '';
 
-        const html = `
-            <div class="popup-header">AGEB ${props.CVE_AGEB || props.cvegeo || ''}</div>
-            <div class="popup-data" style="color: ${colorPct}">${difPct > 0 ? '+' : ''}${difPct.toFixed(1)}%</div>
-            <div class="popup-label">Cambio 2010-2020</div>
-            <div style="margin-top: 8px; font-size: 11px; color: #555; border-top: 1px solid #eee; padding-top: 4px;">
-                <strong>2010:</strong> ${pob2010.toLocaleString()}<br>
-                <strong>2020:</strong> ${pob2020.toLocaleString()}
-            </div>
-        `;
-        popup.setLngLat(e.lngLat).setHTML(html).addTo(map);
+            const html = `
+                <div class="popup-header">AGEB: ${props.CVE_AGEB || props.cvegeo || 'N/A'}</div>
+                <div class="popup-data" style="color: ${colorPct}">${signo}${difPct.toFixed(1)}%</div>
+                <div class="popup-label">Cambio Poblacional</div>
+                <div style="margin-top: 8px; font-size: 11px; color: #555; border-top: 1px solid #eee; padding-top: 4px;">
+                    <strong>Hab. 2010:</strong> ${pob2010.toLocaleString()}<br>
+                    <strong>Hab. 2020:</strong> ${pob2020.toLocaleString()}
+                </div>
+            `;
+            
+            popup.setLngLat(e.lngLat).setHTML(html).addTo(map);
+        }
     });
 
     map.on('mouseleave', 'layer-cambio-poblacional', () => {
@@ -232,6 +240,35 @@ function setupAnimations() {
     // Espacio de lectura
     tlImages.to({}, { duration: 0.5 });
 
+    // --- ANIMACIÓN STEP 5: PÉRDIDA POBLACIONAL ---
+    const tl5 = gsap.timeline({
+        scrollTrigger: {
+            trigger: ".step[data-step='5']",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1.5,
+            pin: true,
+            anticipatePin: 1
+        }
+    });
+
+    // Reset inicial: nos aseguramos que todos empiecen invisibles
+    gsap.set('.top-right-sticky', { autoAlpha: 0, y: 30 });
+
+    tl5
+        // Párrafo 1
+        .to('#text-loss-1', { autoAlpha: 1, y: 0, duration: 1 })
+        .to('#text-loss-1', { autoAlpha: 0, y: -30, duration: 1 }, "+=2") // Tiempo de espera para leer
+        
+        // Párrafo 2
+        .to('#text-loss-2', { autoAlpha: 1, y: 0, duration: 1 })
+        .to('#text-loss-2', { autoAlpha: 0, y: -30, duration: 1 }, "+=2")
+        
+        // Párrafo 3
+        .to('#text-loss-3', { autoAlpha: 1, y: 0, duration: 1 })
+        
+        // Espacio final para que el usuario pueda explorar el mapa con el tooltip
+        .to({}, { duration: 3 });
 }
 
 // 5. Scrollama Setup
@@ -243,6 +280,16 @@ function handleStepEnter(response) {
 
     document.querySelectorAll('.step').forEach(s => s.classList.remove('is-active'));
     element.classList.add('is-active');
+
+    // 1. Declaramos las variables UNA SOLA VEZ al inicio de la función
+    const stickyGlobal = document.getElementById('sticky-global');
+    const scrollyContent = document.querySelector('.scrolly-content');
+    const mapLayer = document.getElementById('map-layer');
+    
+    // Reset por defecto para todos los steps
+    stickyGlobal.style.zIndex = '0';
+    scrollyContent.style.zIndex = '10';
+    if(mapLayer) mapLayer.style.pointerEvents = 'none';
 
     // --- LÓGICA DE LA NARRATIVA (Fondos) ---
     switch (step) {
@@ -257,6 +304,26 @@ function handleStepEnter(response) {
             break;
         case '4':
             switchGlobalLayer('sequence');
+            break;
+        case '5':
+            switchGlobalLayer('map');
+            stickyGlobal.style.zIndex = '20'; 
+            scrollyContent.style.zIndex = '100';
+            
+            if (mapLayer) {
+                mapLayer.style.pointerEvents = 'auto';
+            }
+            
+            if (map.getLayer('layer-cambio-poblacional')) {
+                map.setPaintProperty('layer-cambio-poblacional', 'fill-opacity', 0.8);
+            }
+
+            map.flyTo({ 
+                center: [-86.85, 21.14], 
+                zoom: 11, 
+                duration: 2000,
+                essential: true 
+            });
             break;
         default:
             switchGlobalLayer('none');
