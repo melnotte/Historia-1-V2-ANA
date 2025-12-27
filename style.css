@@ -3,6 +3,7 @@
     --color-teal:        #84BFAE;
     --color-dark-green:  #425931;
     --color-olive:       #97A663;
+    --color-dark-green2: #28413a;
     --color-cream:       #F2EDE4;
     --color-terracotta:  #BF8069;
     --color-orange:      #d97f5a;
@@ -407,6 +408,10 @@ p { line-height: 1.6; font-size: 1.1rem; }
     line-height: 1.6;
 }
 
+.step[data-step="3"] {
+    margin-bottom: 50vh;
+}
+
 /* MEDIA QUERY PARA MÓVILES Y TABLETAS */
 @media (max-width: 900px) {
     .scrolly-container-step3 {
@@ -449,5 +454,139 @@ p { line-height: 1.6; font-size: 1.1rem; }
     .side-card-content .info-divider {
         margin: 0.8rem 0;
         width: 40px;
+    }
+}
+
+/* -- STEP 4: EXPANSIÓN Y DISPERSIÓN -- */
+.step[data-step="4"] {
+    position: relative;
+    width: 100%;
+    min-height: 500vh;
+}
+
+/* Caja de texto narrativa (La que aparece primero) */
+.intro-full-width-bg {
+    width: 100vw;
+    height: auto;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 200;
+    background-color: var(--color-dark-green2);
+}
+
+.intro-text-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 3rem;
+}
+
+.intro-text-wrapper p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    font-family: 'Merriweather', serif;
+    opacity: 0.9;
+    color: var(--color-cream);
+}
+
+/* --- CAPA VISUAL (Dentro del Figure) --- */
+#sequence-images-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+}
+
+.seq-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: filter 0.5s ease;
+}
+
+/* Animación de entrada de la capa de secuencia completa */
+#sequence-layer {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.8s ease, visibility 0.8s;
+}
+
+#sequence-layer.is-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Cuadros flotantes */
+.float-box {
+    position: absolute;
+    z-index: 500;
+    width: 28vw;
+    min-width: 300px;
+    background: rgba(255, 255, 255, 0.98);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: none !important; 
+}
+
+/* 2000 y 2010: Arriba */
+#text-2000 { top: 15vh; left: 5vw; border-left: 6px solid var(--color-orange); }
+#text-2010 { top: 15vh; right: 5vw; border-left: 6px solid var(--color-orange); }
+
+/* 2025: Fijo en esquina inferior derecha */
+#text-2025 { 
+    top: 60vh; 
+    right: 5vw; 
+    border-left: 6px solid var(--color-orange); 
+}
+
+/* Marcador de años */
+#year-marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0.5rem 1.5rem;
+    background: transparent;
+    color: var(--color-cream);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    z-index: 1100;
+    pointer-events: none;
+    line-height: 1;
+}
+
+/* MEDIA QUERY PARA MÓVIL*/
+@media (max-width: 700px) {
+    .float-box {
+        width: 92% !important;
+        left: 4% !important;
+        right: 4% !important;
+        top: 65vh !important; 
+        bottom: auto !important; 
+        height: auto !important;
+        padding: 1.2rem !important;
+        background: rgba(255, 255, 255, 0.95);
+        border-bottom: 6px solid var(--color-orange);
+        z-index: 9999;
+        visibility: hidden;
+    }
+    #year-marker {
+        font-size: 3.5rem;
+        background: transparent;
+        padding: 0.5rem 1rem;
     }
 }

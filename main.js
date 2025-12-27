@@ -89,17 +89,24 @@ const layers = {
     cover: document.getElementById('cover-layer'),
     map: document.getElementById('map-layer'),
     video2: document.getElementById('video-layer-2'),
-    chart: document.getElementById('chart-layer')
+    chart: document.getElementById('chart-layer'),
+    sequence: document.getElementById('sequence-layer')
 };
 
 // 3. Lógica de Capas Globales
 function switchGlobalLayer(name) {
-    // Apaga todas las capas
-    Object.values(layers).forEach(el => {
-        if (el) el.classList.remove('is-active');
+    Object.keys(layers).forEach(key => {
+        const layer = layers[key];
+        if (layer) {
+            if (key === name) {
+                layer.classList.add('is-active');
+                gsap.to(layer, { opacity: 1, duration: 0.5 });
+            } else {
+                layer.classList.remove('is-active');
+                gsap.to(layer, { opacity: 0, duration: 0.5 });
+            }
+        }
     });
-    // Enciende solo la solicitada
-    if (layers[name]) layers[name].classList.add('is-active');
 }
 
 // 4. Configuración de Animaciones (GSAP)
@@ -107,7 +114,7 @@ function setupAnimations() {
     // Aseguramos que el plugin esté registrado
     gsap.registerPlugin(ScrollTrigger);
 
-    // Animación específica para el Step 2 (Grid Split)
+    // --- ANIMACIÓN STEP 2: GRID SPLIT ---
     // Seleccionamos específicamente el step 2 para animar sus columnas
     gsap.utils.toArray('.step[data-step="2"]').forEach(step => {
         // Seleccionamos los contenidos internos (texto e info-card)
@@ -134,7 +141,7 @@ function setupAnimations() {
         );
     });
 
-    // Animación para Step 3 (Secuencia Chart)
+    // --- ANIMACIÓN STEP 3: SECUENCIA CHART ---
     const isDesktop = window.innerWidth > 900;
     const targetX = isDesktop ? -40 : 0;
 
@@ -179,6 +186,52 @@ function setupAnimations() {
         
         // 5. Salida Final
         .to(['.chart-impact', '.chart-container'], { opacity: 0, duration: 1, delay: 2 });
+
+    // --- ANIMACIÓN STEP 4: SECUENCIA Y FADE IN-SITU ---
+    const sequenceYears = [1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025];
+    const stepDuration = 2; 
+
+    const tlImages = gsap.timeline({
+        scrollTrigger: {
+            trigger: ".step[data-step='4']",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: true, 
+            pin: true,
+            anticipatePin: 1
+        }
+    });
+
+    // Anclaje inicial de años
+    tlImages.set('#year-marker', { textContent: sequenceYears[0] }, 0);
+
+    // Salida de la cortina de contexto inicial
+    tlImages.to(".intro-full-width-bg", { autoAlpha: 0, duration: 2 });
+
+
+    sequenceYears.forEach((year, i) => {
+        const timeBase = (i * stepDuration) + 2; 
+
+        // Cambiamos el año usando textContent
+        tlImages.set('#year-marker', { textContent: year }, timeBase);
+
+        // Animación de las imágenes de fondo
+        if (i < sequenceYears.length - 1) {
+            tlImages.to(`#img-seq-${year}`, { opacity: 0, duration: stepDuration }, timeBase)
+                    .to(`#img-seq-${sequenceYears[i+1]}`, { opacity: 1, duration: stepDuration }, timeBase);
+        }
+
+        // Animación de los párrafos: Entrada y Salida sincronizada
+        if ([2000, 2010, 2025].includes(year)) {
+            const target = `#text-${year}`;
+            tlImages.to(target, { autoAlpha: 1, duration: 1 }, timeBase)
+                    .to(target, { autoAlpha: 0, duration: 1 }, timeBase + stepDuration);
+        }
+    });
+
+    // Espacio de lectura
+    tlImages.to({}, { duration: 0.5 });
+
 }
 
 // 5. Scrollama Setup
@@ -196,15 +249,15 @@ function handleStepEnter(response) {
         case '1':
             switchGlobalLayer('cover');
             break;
-            
         case '2':
-            switchGlobalLayer('cover'); 
+            switchGlobalLayer('none'); 
             break;
-            
         case '3':
             switchGlobalLayer('chart');
             break;
-
+        case '4':
+            switchGlobalLayer('sequence');
+            break;
         default:
             switchGlobalLayer('none');
             break;
