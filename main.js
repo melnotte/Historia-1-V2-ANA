@@ -151,7 +151,8 @@ const layers = {
     map: document.getElementById('map-layer'),
     video2: document.getElementById('video-layer-2'),
     chart: document.getElementById('chart-layer'),
-    sequence: document.getElementById('sequence-layer')
+    sequence: document.getElementById('sequence-layer'),
+    comparison: document.getElementById('comparison-layer')
 };
 
 // 3. Lógica de Capas Globales
@@ -406,6 +407,34 @@ function setupAnimations() {
         // Párrafo 3
         .to('.dist-card-final', { opacity: 1, x: targetX7, duration: 2.5, ease: "power2.out" });
 
+    // --- ANIMACIÓN STEP 8: COMPARACIÓN (Crossfade) ---
+    gsap.set(".img-overlay", { autoAlpha: 0 });
+    gsap.set("#comp-text-final", { autoAlpha: 0, y: 30 }); 
+
+    const tl8 = gsap.timeline({
+        scrollTrigger: {
+            trigger: ".step[data-step='8']",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 0.5, 
+            pin: true,
+            anticipatePin: 1
+        }
+    });
+
+    tl8
+        // 1. Buffer
+        .to({}, { duration: 0.5 }) 
+
+        // 2. Transición de imagen
+        .to(".img-overlay", { autoAlpha: 1, duration: 4, ease: "none" })
+        
+        // 3. Entrada del texto
+        .to("#comp-text-final", { autoAlpha: 1, y: 0, duration: 2, ease: "power2.out" }, "-=3")
+        
+        // 4. Pausa final
+        .to({}, { duration: 2 });
+
 }
 
 // 5. Scrollama Setup
@@ -490,6 +519,16 @@ function handleStepEnter(response) {
                 duration: 2000,
                 essential: true 
             });
+            break;
+        case '8':
+            switchGlobalLayer('comparison');
+
+            gsap.set(".img-overlay", { opacity: 0 });
+
+            stickyGlobal.style.zIndex = '20';
+            scrollyContent.style.zIndex = '100'; 
+            
+            if(mapLayer) mapLayer.style.pointerEvents = 'none';
             break;
         default:
             switchGlobalLayer('none');
