@@ -18,13 +18,13 @@ const map = new mapboxgl.Map({
 map.addControl(new mapboxgl.NavigationControl({ showCompass: true, showZoom: true }), 'bottom-right');
 
 map.on('load', () => {
-    // 1. FUENTE
+
+    // 1. CAPA DE CAMBIO POBLACIONAL
     map.addSource('src-cambio-poblacional', {
         type: 'geojson',
         data: 'data/cambio-poblacional.geojson' 
     });
 
-    // 2. CAPA BASE
     map.addLayer({
         id: 'layer-cambio-poblacional',
         type: 'fill',
@@ -42,17 +42,6 @@ map.on('load', () => {
         }
     });
 
-    // 3. HUELLA URBANA
-    map.addSource('src-geo', { type: 'geojson', data: 'data/geo.json' });
-    map.addLayer({
-        id: 'layer-geo',
-        type: 'fill',
-        source: 'src-geo',
-        layout: { 'visibility': 'visible' },
-        paint: { 'fill-color': '#023047', 'fill-opacity': 0 }
-    });
-
-    // 4. INTERACCIÓN (Hover)
     const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 20 });
 
     map.on('mousemove', 'layer-cambio-poblacional', (e) => {
@@ -90,6 +79,70 @@ map.on('load', () => {
         map.getCanvas().style.cursor = '';
         popup.remove();
     });
+
+    // 2. CAPA DE MARGINACIÓN
+    map.addSource('src-marginacion', {
+    type: 'geojson',
+    data: 'data/indice-marginacion.geojson' 
+    });
+
+    map.addLayer({
+    id: 'layer-marginacion',
+    type: 'fill',
+    source: 'src-marginacion',
+    layout: { 'visibility': 'none' },
+    paint: {
+        'fill-color': [
+            'match', ['get', 'GM_2020'],
+            'Muy alto', '#a11a1a',
+            'Alto',     '#c24d4d',
+            'Medio',    '#e08585',
+            'Bajo',     '#f2bdbd',
+            'Muy bajo', '#f9e2e2',
+            'rgba(0,0,0,0)'
+        ],
+        'fill-opacity': 0,
+        'fill-outline-color': '#ffffff'
+    }
+    });
+
+    map.on('mousemove', 'layer-marginacion', (e) => {
+        const opacity = map.getPaintProperty('layer-marginacion', 'fill-opacity');
+        if (opacity < 0.1) return;
+
+        if (e.features.length > 0) {
+            map.getCanvas().style.cursor = 'pointer';
+            const props = e.features[0].properties;
+
+            const colorMap = {
+                'Muy alto': '#a11a1a',
+                'Alto':     '#c24d4d',
+                'Medio':    '#e08585',
+                'Bajo':     '#f2bdbd',
+                'Muy bajo': '#f9e2e2'
+            };
+            const statusColor = colorMap[props.GM_2020] || '#333';
+
+            // Construcción del HTML del tooltip
+            const html = `
+                <div class="popup-header">AGEB: ${props.AGEB || props.CVE_AGEB || 'N/A'}</div>
+                <div class="popup-data" style="color: ${statusColor}">${props.GM_2020}</div>
+                <div class="popup-label">Grado de Marginación (2020)</div>
+                <div style="margin-top: 8px; font-size: 11px; color: #555; border-top: 1px solid #eee; padding-top: 4px;">
+                    <strong>Índice de marginación:</strong> ${Number(props.IM_2020 || 0).toFixed(2)}<br>
+                    <strong>Población:</strong> ${Number(props.POB_TOTAL || 0).toLocaleString()} hab.
+                </div>
+            `;
+            
+            popup.setLngLat(e.lngLat).setHTML(html).addTo(map);
+        }
+    });
+
+    map.on('mouseleave', 'layer-marginacion', () => {
+    map.getCanvas().style.cursor = '';
+    popup.remove();
+    });
+
 });
 
 // 2. Configuración y Selectores
@@ -321,6 +374,38 @@ function setupAnimations() {
 
         return () => forestTL.kill();
     });
+
+    // --- ANIMACIÓN STEP 7: SECUENCIA NARRATIVA DESIGUALDAD ---
+    const targetX7 = isDesktop ? -40 : 0;
+
+    gsap.set(['.dist-card-1', '.dist-card-2', '.dist-card-final'], { 
+        opacity: 0, 
+        x: isDesktop ? -180 : -80 
+    });
+
+    const tl7 = gsap.timeline({
+        scrollTrigger: {
+            trigger: ".step[data-step='7']",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1,
+            pin: true,
+            anticipatePin: 1
+        }
+    });
+
+    tl7
+        // Párrafo 1
+        .to('.dist-card-1', { opacity: 1, x: targetX7, duration: 2.5, ease: "power2.out" })
+        .to('.dist-card-1', { opacity: 0, x: 100, duration: 1.5, delay: 2 })
+
+        // Párrafo 2
+        .to('.dist-card-2', { opacity: 1, x: targetX7, duration: 2.5, ease: "power2.out" })
+        .to('.dist-card-2', { opacity: 0, x: 100, duration: 1.5, delay: 2 })
+
+        // Párrafo 3
+        .to('.dist-card-final', { opacity: 1, x: targetX7, duration: 2.5, ease: "power2.out" });
+
 }
 
 // 5. Scrollama Setup
@@ -367,7 +452,11 @@ function handleStepEnter(response) {
             }
             
             if (map.getLayer('layer-cambio-poblacional')) {
+                map.setLayoutProperty('layer-cambio-poblacional', 'visibility', 'visible');
                 map.setPaintProperty('layer-cambio-poblacional', 'fill-opacity', 0.8);
+            }
+            if (map.getLayer('layer-marginacion')) {
+                map.setLayoutProperty('layer-marginacion', 'visibility', 'none');
             }
 
             map.flyTo({ 
@@ -379,6 +468,28 @@ function handleStepEnter(response) {
             break;
         case '6':
             switchGlobalLayer('none'); 
+            break;
+        case '7':
+            switchGlobalLayer('map');
+            stickyGlobal.style.zIndex = '20'; 
+            scrollyContent.style.zIndex = '100';
+
+            if (mapLayer) mapLayer.style.pointerEvents = 'auto';
+            
+            if (map.getLayer('layer-cambio-poblacional')) {
+                map.setLayoutProperty('layer-cambio-poblacional', 'visibility', 'none');
+            }
+            if (map.getLayer('layer-marginacion')) {
+                map.setLayoutProperty('layer-marginacion', 'visibility', 'visible');
+                map.setPaintProperty('layer-marginacion', 'fill-opacity', 0.8);
+            }
+
+            map.flyTo({ 
+                center: [-86.85, 21.14], 
+                zoom: 11, 
+                duration: 2000,
+                essential: true 
+            });
             break;
         default:
             switchGlobalLayer('none');
