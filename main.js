@@ -237,9 +237,6 @@ function setupAnimations() {
         }
     });
 
-    // Espacio de lectura
-    tlImages.to({}, { duration: 0.5 });
-
     // --- ANIMACIÓN STEP 5: PÉRDIDA POBLACIONAL ---
     const tl5 = gsap.timeline({
         scrollTrigger: {
@@ -267,8 +264,59 @@ function setupAnimations() {
         // Párrafo 3
         .to('#text-loss-3', { autoAlpha: 1, y: 0, duration: 1 })
         
-        // Espacio final para que el usuario pueda explorar el mapa con el tooltip
-        .to({}, { duration: 3 });
+        .to({}, { duration: 0.5 });
+    
+
+    // ANIMACIÓN STEP 6: PÉRDIDA FORESTAL
+    const mm = gsap.matchMedia();
+
+    mm.add({
+        isDesktop: "(min-width: 901px)",
+        isMobile: "(max-width: 900px)"
+    }, (context) => {
+        let { isDesktop } = context.conditions;
+
+        const forestTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".step[data-step='6']",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1.5,
+                pin: ".forest-container",
+                pinSpacing: true,
+                anticipatePin: 1
+            }
+        });
+
+    if (isDesktop) {
+        forestTL.to(".forest-item", { 
+            opacity: 1, 
+            y: 0, 
+            stagger: 0.2, 
+            duration: 1.5 
+        });
+    }
+
+    forestTL.to({}, { duration: 2 });
+
+        // Secuencia de párrafos para ambos
+        const forestYears = ['2000', '2010', '2020'];
+        forestYears.forEach((year) => {
+            forestTL.to(`#forest-txt-${year}`, { 
+                autoAlpha: 1, 
+                y: 0, 
+                duration: 1.5 
+            })
+            .to(`#forest-txt-${year}`, { 
+                autoAlpha: 0, 
+                y: -30, 
+                duration: 1, 
+                delay: 2
+            });
+        });
+
+        return () => forestTL.kill();
+    });
 }
 
 // 5. Scrollama Setup
@@ -324,6 +372,9 @@ function handleStepEnter(response) {
                 duration: 2000,
                 essential: true 
             });
+            break;
+        case '6':
+            switchGlobalLayer('none'); 
             break;
         default:
             switchGlobalLayer('none');
