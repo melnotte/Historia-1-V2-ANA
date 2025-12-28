@@ -281,37 +281,41 @@ function setupAnimations() {
                 trigger: ".step[data-step='6']",
                 start: "top top",
                 end: "bottom bottom",
-                scrub: 1.5,
+                scrub: 1,
                 pin: ".forest-container",
                 pinSpacing: true,
                 anticipatePin: 1
             }
         });
 
-    if (isDesktop) {
-        forestTL.to(".forest-item", { 
-            opacity: 1, 
-            y: 0, 
-            stagger: 0.2, 
-            duration: 1.5 
+        // 1. FASE DE IMÁGENES
+        const items = ["#item-2000", "#item-2010", "#item-2020"];
+        items.forEach((item) => {
+            forestTL.to(item, { 
+                opacity: 1, 
+                y: 0, 
+                stagger: 0.5,
+                duration: 2,
+                ease: "power2.inOut"
+            });
         });
-    }
 
-    forestTL.to({}, { duration: 2 });
+        // Pequeña pausa visual tras completar el grid
+        forestTL.to({}, { duration: 1 });
 
-        // Secuencia de párrafos para ambos
+        // 2. FASE DE PÁRRAFOS
         const forestYears = ['2000', '2010', '2020'];
         forestYears.forEach((year) => {
             forestTL.to(`#forest-txt-${year}`, { 
                 autoAlpha: 1, 
                 y: 0, 
-                duration: 1.5 
+                duration: 2 
             })
             .to(`#forest-txt-${year}`, { 
                 autoAlpha: 0, 
                 y: -30, 
-                duration: 1, 
-                delay: 2
+                duration: 1.5, 
+                delay: 2 
             });
         });
 

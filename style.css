@@ -682,7 +682,7 @@ p { line-height: 1.6; font-size: 1.1rem; }
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background: #000;
+    background: #e7eded;
 }
 
 /* Grid de escritorio: 3 columnas, 0 gap */
@@ -773,8 +773,8 @@ p { line-height: 1.6; font-size: 1.1rem; }
     .forest-item {
         flex: 1;
         height: 33.33vh;
-        opacity: 1 !important;
-        transform: none !important;
+        opacity: 0;
+        transform: translateY(20px);
     }
     .forest-text-wrapper {
         width: 85%;
