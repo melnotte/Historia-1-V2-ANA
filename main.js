@@ -152,7 +152,8 @@ const layers = {
     video2: document.getElementById('video-layer-2'),
     chart: document.getElementById('chart-layer'),
     sequence: document.getElementById('sequence-layer'),
-    comparison: document.getElementById('comparison-layer')
+    comparison: document.getElementById('comparison-layer'),
+    vehicle: document.getElementById('vehicle-layer')
 };
 
 // 3. Lógica de Capas Globales
@@ -435,6 +436,44 @@ function setupAnimations() {
         // 4. Pausa final
         .to({}, { duration: 2 });
 
+    // --- ANIMACIÓN STEP 9: PARQUE VEHICULAR ---
+    const step9 = document.querySelector(".step[data-step='9']");
+
+    if (step9) {
+        const vCards = step9.querySelectorAll('.vehicle-card');
+        
+        gsap.set(vCards, { autoAlpha: 0, y: 30 });
+
+        const tl9 = gsap.timeline({
+            scrollTrigger: {
+                trigger: step9,
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1,
+                pin: true,
+                anticipatePin: 1
+            }
+        });
+
+        tl9
+            // FASE 1: BUFFER
+            .to({}, { duration: 1 }) 
+
+            // FASE 2: ENTRA CARD 1
+            .to(vCards[0], { autoAlpha: 1, y: 0, duration: 2, ease: "power2.out" })
+            
+            // FASE 3: CAMBIO 1 -> 2
+            .to(vCards[0], { autoAlpha: 0, y: -20, duration: 1.5 }, "+=1")
+            .to(vCards[1], { autoAlpha: 1, y: 0, duration: 2, ease: "power2.out" }, "-=0.5")
+
+            // FASE 4: CAMBIO 2 -> 3
+            .to(vCards[1], { autoAlpha: 0, y: -20, duration: 1.5 }, "+=1")
+            .to(vCards[2], { autoAlpha: 1, y: 0, duration: 2, ease: "power2.out" }, "-=0.5")
+
+            // FASE 5: SALIDA FINAL
+            .to(vCards[2], { autoAlpha: 0, y: -20, duration: 1.5 }, "+=2");
+    }
+
 }
 
 // 5. Scrollama Setup
@@ -522,13 +561,29 @@ function handleStepEnter(response) {
             break;
         case '8':
             switchGlobalLayer('comparison');
-
-            gsap.set(".img-overlay", { opacity: 0 });
-
             stickyGlobal.style.zIndex = '20';
             scrollyContent.style.zIndex = '100'; 
             
             if(mapLayer) mapLayer.style.pointerEvents = 'none';
+            break;
+        case '9':
+            switchGlobalLayer('vehicle');
+
+            stickyGlobal.style.zIndex = '20'; 
+            scrollyContent.style.zIndex = '100';
+            
+            if(document.getElementById('map-layer')) {
+                document.getElementById('map-layer').style.pointerEvents = 'none';
+            }
+            const vehicleLayer = document.getElementById('vehicle-layer');
+            if (vehicleLayer) vehicleLayer.style.pointerEvents = 'auto';
+
+            if (window.vehicleChart && !window.vehicleChart.hasLoaded) { 
+                requestAnimationFrame(() => {
+                    window.vehicleChart.init();
+                    window.vehicleChart.hasLoaded = true; 
+                });
+            }
             break;
         default:
             switchGlobalLayer('none');

@@ -73,6 +73,10 @@
                 </div>
             </div>
 
+            <div id="vehicle-layer" class="global-layer">
+                <div id="vehicleGrowthChart"></div>
+            </div>
+
         </figure>
 
         <article class="scrolly-content">
@@ -226,11 +230,28 @@
             <!-- STEP 8 MÁS COCHES QUE CASAS -->
             <div class="step comparison-step" data-step="8">
                 <div class="step-content center-float">
-                    
                     <div class="float-box text-overlay-comp" id="comp-text-final">
                         <h3>Más coches que casas</h3>
                         <div class="info-divider"></div>
-                        <p>En mi casa siempre se hablaba de cómo “cada vez hay más coches”. Estos datos lo confirman.</p>
+                        <p><em>En mi casa siempre se hablaba de cómo “cada vez hay más coches”. Estos datos lo confirman.</em></p>
+                        </div>
+                </div>
+            </div>
+
+            <!-- STEP 9 GRÁFICA PARQUE VEHICULAR -->
+            <div class="step" data-step="9">
+                <div class="vehicle-cards-container">
+                    
+                    <div class="vehicle-card card-1">
+                        <p><strong>Cada coche nuevo</strong> es una familia que encontró en el automóvil la manera de llegar a tiempo.</p>
+                    </div>
+
+                    <div class="vehicle-card card-2">
+                        <p>Pero también es más tráfico, más gasto y más espacio ocupado en las calles que podría usarse para otras cosas.</p>
+                    </div>
+
+                    <div class="vehicle-card card-3">
+                        <p>El éxito turístico no siempre se traduce en una ciudad justa. Estos datos nos ayudan a ver esa diferencia.</p>
                     </div>
 
                 </div>
@@ -246,6 +267,7 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
     <script src="https://unpkg.com/scrollama"></script>
+    <script src="vehicle-chart.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

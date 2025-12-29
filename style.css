@@ -59,6 +59,7 @@ p { line-height: 1.6; font-size: 1.1rem; }
     opacity: 1; 
     visibility: visible; 
     pointer-events: auto;
+    z-index: 50 !important;
 }
 
 #map { width: 100%; height: 100%; }
@@ -976,4 +977,123 @@ p { line-height: 1.6; font-size: 1.1rem; }
     }
 }
 
+/* --- ESTILOS STEP 9: PARQUE VEHICULAR --- */
+.step[data-step="9"] {
+    position: relative;
+    width: 100%;
+    min-height: 450vh; 
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+}
 
+#vehicle-layer {
+    background-color: var(--bg-body);
+    display: grid; 
+    place-items: center; 
+    width: 100%;
+    height: 100vh;
+    position: absolute; 
+    top: 0; left: 0;
+    z-index: 10;
+}
+
+#vehicleGrowthChart {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    pointer-events: auto;
+    will-change: transform; 
+}
+
+/* Tooltip de la gráfica */
+.vehicle-tooltip {
+    font-family: 'Inter', sans-serif;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 0.85rem;
+    z-index: 9999;
+    background: rgba(255, 255, 255, 0.98);
+    padding: 10px 14px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: absolute;
+    color: var(--text-primary);
+}
+
+/* CAPA FRONTAL  */
+.vehicle-cards-container {
+    width: 100%;
+    height: 100vh; 
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; 
+    padding-top: 15vh;
+    position: relative;
+    z-index: 200;
+}
+
+/* TARJETAS INDIVIDUALES */
+.vehicle-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-left: 5px solid var(--color-terracotta);
+    padding: 2rem;
+    border-radius: 4px;
+    max-width: 400px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    position: absolute; 
+    opacity: 0;
+    transform: translateY(40px);
+}
+
+.vehicle-card p strong {
+    color: var(--color-teal);
+}
+
+/* Estilo base del título de la gráfica de parque vehicular */
+.chart-title-responsive {
+    font-family: 'Merriweather', serif;
+    font-weight: 700;
+    font-size: 16px;
+    fill: var(--text-primary);
+    transform: translateY(-10px); 
+}
+
+/* MEDIA QUERIES TABLET Y MÓVIL */
+@media (max-width: 900px) {
+    #vehicle-layer {
+        place-items: start center;
+        padding-top: 10vh;
+    }
+    .vehicle-cards-container {
+        align-items: flex-start;
+        padding-top: 15vh;
+    }
+    .vehicle-card {
+        width: 70%;
+        position: absolute;
+        top: 15vh;
+    }
+    /* --- ROTACIÓN DE ETIQUETAS EJE X --- */
+    .chart-container .x-axis text, 
+    #vehicleGrowthChart .x-axis text {
+        transform: translate(-12px, -8px) rotate(-90deg) !important;
+        text-anchor: end !important;
+        transform-box: fill-box !important;
+        transform-origin: center right !important;
+    }
+    .chart-title-responsive {
+        font-size: 14px;
+        transform: translateY(-35px);
+    }
+}
+
+/* MEDIA QUERY MÓVIL */
+@media (max-width: 600px) {
+    .chart-title-responsive {
+        font-size: 13px;
+        transform: translateY(-45px); 
+    }
+}
