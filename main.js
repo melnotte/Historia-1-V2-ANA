@@ -8,11 +8,12 @@ const map = new mapboxgl.Map({
     center: [-86.85, 21.16], 
     zoom: 10,
     interactive: true,
-    scrollZoom: false,      
+    cooperativeGestures: true,
+    scrollZoom: true,
+    touchZoomRotate: true,  //(permite zoom/rotar con 2 dedos)
     dragPan: true,          
     doubleClickZoom: true,  
-    touchZoomRotate: false, 
-    dragRotate: false       
+    dragRotate: false
 });
 
 map.addControl(new mapboxgl.NavigationControl({ showCompass: true, showZoom: true }), 'bottom-right');
