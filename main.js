@@ -153,7 +153,8 @@ const layers = {
     chart: document.getElementById('chart-layer'),
     sequence: document.getElementById('sequence-layer'),
     comparison: document.getElementById('comparison-layer'),
-    vehicle: document.getElementById('vehicle-layer')
+    vehicle: document.getElementById('vehicle-layer'),
+    cierre: document.getElementById('cierre-layer')
 };
 
 // 3. Lógica de Capas Globales
@@ -583,6 +584,16 @@ function handleStepEnter(response) {
                     window.vehicleChart.init();
                     window.vehicleChart.hasLoaded = true; 
                 });
+            }
+            break;
+        case '10':
+            switchGlobalLayer('cierre');
+            stickyGlobal.style.zIndex = '20'; 
+            scrollyContent.style.zIndex = '100';
+            
+            if (mapLayer) mapLayer.style.pointerEvents = 'none';
+            if (document.getElementById('vehicle-layer')) {
+                document.getElementById('vehicle-layer').style.pointerEvents = 'none';
             }
             break;
         default:
